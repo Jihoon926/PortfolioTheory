@@ -6,8 +6,8 @@ import seaborn as sns
 import statsmodels.api as sm
 import pandas_datareader.data as web
 
-tickers = ["GLD", "SLV", "GSG", "BIL", "SHY", "TLT", "EWY", "EWJ", "FXI", "FEZ", "TSLA", "NVDA", "PLTR", "IONQ", "AAPL", "MSFT", "GOOG", "META", "AMZN", "INTC", "MU", 
-           "LLY", "COIN", "TEM", "LAES"]
+tickers = ["^IRX", "GLD", "SLV", "GSG", "BIL", "SHY", "TLT", "EWY", "EWJ", "FXI", "FEZ", "TSLA", "NVDA", "MSFT", "PLTR", "IONQ", "AMD", "AVGO", "SMCI", "TSM", "GOOG", "INTC", 
+           "AMZN", "META", "AAPL", "MU", "LLY", "MARA", "GME", "O"]
 
 def read_yf_data(tickers, start_date, end_date, save_path=None):
     """
@@ -18,12 +18,6 @@ def read_yf_data(tickers, start_date, end_date, save_path=None):
         hist = yf.download(ticker, start=start_date, end=end_date)["Close"]
         df[ticker] = hist
         print(hist.head())
-    # 3-month T-Bill interest rate (DTB3) from FRED
-    t_bill = web.DataReader("DTB3", "fred", start=start_date, end=end_date)
-    t_bill = t_bill.rename(columns={"DTB3": "3M_TBill_Rate"})
-
-    # Merge data
-    df = df.join(t_bill, how="outer")
     monthly_prices = df.resample("M").last()
     if save_path:
         monthly_prices.to_csv(save_path)
@@ -50,9 +44,12 @@ def show_correlation_matrix(df, save_path=None):
 
 if __name__ == "__main__":
     print("yfinance version:", yf.__version__)
-    df = read_yf_data(tickers, "2015-05-27", "2025-05-27", "./data/asset_universe.csv")
+    df = read_yf_data(tickers, "2015-01-01", "2024-12-31", "./data/asset_universe.csv")
+    pd.set_option('display.max_columns', None)
+    print(df.head())
     # df = read_csv_data("./data/asset_universe.csv")
     # pd.set_option('display.max_columns', None)
     # print(df.head())
     # pd.set_option('display.max_rows', None)
     # print(df["^XDA"])
+    
